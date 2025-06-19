@@ -1,251 +1,733 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- Bootstrap core CSS -->
-    <link href="Content/bootstrap.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="Content/scrolling-nav.css" rel="stylesheet">
-    <link href="Content/Site.css" rel="stylesheet" />
-	<link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" />
-	<style type="text/css">
-		.flex-caption {
-		 width: 100%;
-		 padding: 2%;
-		 left: 0;
-		 bottom: 0;
-		 background: rgba(0,0,0,.5);
-		 color: #fff;
-		 text-shadow: 0 -1px 0 rgba(0,0,0,.3);
-		 font-size: 14px;
-		 line-height: 18px;
-		}
-	</style>
-    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aidan Lee-Calamera - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2d3748;
+            --secondary-color: #1a202c;
+            --accent-color: #718096;
+            --dark-bg: #0f0f0f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #e2e8f0;
+            --text-dark: #1a202c;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--dark-bg) 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Conway's Game of Life Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        #gameOfLifeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--accent-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(113, 128, 150, 0.3)); }
+            to { filter: drop-shadow(0 0 30px rgba(113, 128, 150, 0.6)); }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(113, 128, 150, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(113, 128, 150, 0.4);
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, var(--accent-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Glass morphism cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        /* Video Gallery */
+        .video-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .video-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-card video {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .video-card .caption {
+            padding: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* About section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: start;
+            margin-top: 2rem;
+        }
+
+        .about-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .highlight-item {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .highlight-item:hover {
+            transform: translateX(10px);
+            border-color: var(--accent-color);
+        }
+
+        .highlight-item h3 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .essay-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            line-height: 1.8;
+        }
+
+        .essay-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(113, 128, 150, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(113, 128, 150, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .video-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Section backgrounds */
+        .section:nth-child(even) {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<body id="page-top">
+<body>
+    <!-- Conway's Game of Life Background -->
+    <div class="bg-animation">
+        <canvas id="gameOfLifeCanvas"></canvas>
+    </div>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-        <div class="container">
-            <a class="navbar-brand js-scroll-trigger" href="#page-top">Home</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link js-scroll-trigger" href="#about">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link js-scroll-trigger" href="#projects">Projects</a>
-                    </li>
-					<li class="nav-item">
-                        <a class="nav-link js-scroll-trigger" href="#k9videos">K9 Videos</a>
-                    </li>
-					<li class="nav-item">
-                        <a class="nav-link js-scroll-trigger" href="#miscvideos">Misc. Videos</a>
-                    </li>
-                </ul>
-            </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Aidan Lee-Calamera</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#k9videos">K9 Videos</a></li>
+                <li><a href="#miscvideos">Misc Videos</a></li>
+            </ul>
         </div>
     </nav>
-    <header class="bg-primary text-white">
-        <div class="container text-center">
-            <h1>Welcome to Aidan Lee-Calamera's Portfolio</h1>
-        </div>
-    </header>
-    <section id="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <h2>About this portfolio</h2>
-                    <p class="lead">This page is a compilation of projects made by Aidan over the course of the past 4 years, it includes:</p>
-                    <ul>
-                        <li>Videos of my projects</li>
-                        <li>Descriptions of my projects</li>
-			<li><a href="#Essay">More about me</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="projects" class="bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <h2>Projects I have created</h2>
-                    <p class="lead">Some projects I have created include a life sized K9 from Doctor Who, a propane propulsion gun, a jacobs ladder, and a tesla coil.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="k9videos">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <h2>K9 Videos</h>
-					<section class="slider">
-			        <div class="flexslider">
-			          <ul class="slides">
-			            <li>
-			  	    	    <video width="722" height="504" controls="controls">
-							  <source src="vids/K9_1.mp4" type="video/mp4">
-							</video>
-			              <p class="flex-caption">A video of some hub BLDC motors I used to make K9 mobile.</p>
-			  	    		</li>
-			  	    		<li>
-			  	    		 <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_2.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">K9 being controlled by an xbox 360 controller and moving around.</p>
-			  	    		</li>
-			  	    		<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_3.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A horizontal extension mechanism I made in order to extend K9's nose.</p>
-			  	    		</li>
-			  	    		<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_4.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">The nose mechanism installed.</p>
-							<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_5.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A mechanism to move two ears in opposing directions.</p>
-			  	    		<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_6.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">The ears installed.</p>
-							<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_7.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">K9 after full instalation of all electronics.</p>
-							<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/K9_8.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">K9 after being fully assembled.</p>
-			  	    		</li>
-			          </ul>
-			        </div>
-			      </section>
-			    </div>
-			</div>
-		</div>
-    </section>
-	<section id="miscvideos">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <h2>Misc. Videos</h>
-					<section class="slider">
-			        <div class="flexslider">
-			          <ul class="slides">
-			            <li>
-			  	    	    <video width="722" height="504" controls="controls">
-							  <source src="vids/Flamethrower_V1.mp4" type="video/mp4">
-							</video>
-			              <p class="flex-caption">A tiny little "flamethrower" powered by a hydrogen generator.</p>
-			  	    		</li>
-			  	    		<li>
-			  	    		 <video width="722" height="504" controls="controls">
-							   <source src="vids/CandyCaneCanon_1.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A cannon using a bungee cord shooting an orange.</p>
-			  	    		</li>
-			  	    		<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/TeslaCoil_1.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A tesla coil powered by a fly zapper arcing.</p>
-						    </li>
-							<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/TeslaCoil_2.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">My tesla coil ligting up in the dark.</p>
-			  	    		</li>
-							<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/MicrowaveSpark.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A microwave oven transformer arcing to a chicken stick.</p>
-							</li>
-							<li>
-			  	    	    <video width="722" height="504" controls="controls">
-							   <source src="vids/ElectroMagnet.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">An electormagnet made from the microwave oven transformer.</p>
-			  	    		</li>
-							<li>
-							<video width="722" height="504" controls="controls">
-							   <source src="vids/JacobsLadder.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A Jacobs Ladder made by me.</p>
-			  	    		</li>
-							<li>
-							<video width="722" height="504" controls="controls">
-							   <source src="vids/Predator.mp4" type="video/mp4">
-							 </video>
-			              <p class="flex-caption">A Predator costume made from custom parts.</p>
-			  	    		</li>
-			          </ul>
-			        </div>
-			      </section>
-			    </div>
-			</div>
-		</div>
-    </section>
-    <section id="Essay" class="bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <h2>More About Me</h2>
-                    <p class="lead"><p>Working with my hands, whether it be cutting wood to make a model or soldering an Arduino to motors and control boards, has always been something that engages me deeply and computer science has been a good way to embrace this. Understanding household devices, taking them apart, and putting them back together, or even making them better, is always an interesting challenge, especially when I find something broken in the garbage and fix it. Creating and designing using wood is another passion of mine, I loved the aesthetic of the robot from Doctor Who, K9, and started originally building a life-size model from wood using scavenged parts for wheels and the tail. Fixing electronic objects and making things out of wood provides me with a lot of joy. In my lifetime as a builder and breaker of objects, three distinct projects stand out: a functioning Predator costume I made for Halloween, a Jacob's ladder, and my personal favorite, a 1:1 scale model fully functional K9 from Doctor Who. Each of these projects taught me that doing what I love doing can lead me to a career I love and I have learned many new ways of accomplishing tasks.
 
-<p>First, a costume I made of the Predator from the Predator movies, involved many methods and mediums which I had never used before. Although many of these mediums proved to be difficult to learn in a one-week time frame, I learned how to use them thanks to some help and allowed me to get my project finished on time. The electronics of the project were quite basic, but it required several days of planning since I had to figure out how to integrate the various electronic components into my costume and overcome challenges to ensure it was compatible with the other materials of the costume. This project taught me that my passion for building can take many forms and that I can adjust to different mediums.
-	
-<p>My second favorite invention was a Jacob’s Ladder which is a big machine that makes arcs shoot into the air. The idea first came to me when I found near my school an 80lb CRT TV, and I lugged it back home. I had always wanted to tear one down and see exactly what made them work, and after my usual thorough investigation, I proceeded to see what I could salvage and use for projects. The first thing that caught my eye was the main transformer of the TV, and I knew it could produce thousands of volts and very fancy arcs. After doing some research on the transformer I discovered that the voltage was just enough to make a Jacob’s Ladder. A Jacob’s Ladder is something my dad had wanted me to make since I first showed him the 20,000 Volt arc of a Microwave Oven Transformer, and after discovering the maximum voltage the transformer could take. I proceeded to power it up and hold the live wire of the transformer over the many pins on the bottom, after seeing the giant arc leap out to the wire I knew that was the one to stick another wire to. After attaching both wires of the transformer to opposed metal rods and adjusting them to be just close enough to make an arc I ran into my first problem, the arc just stayed at the bottom and wouldn’t move up. After doing a lot of research I discovered people usually put a heat source below the arc since the rising hot air will lift the ark up. However, I didn’t want to have a candle I would have to light each time I wanted to show my creation off. Another problem was the amount of Ozone the machine made from the arc breaking down the air; the smell was bad and it wasn’t the healthiest thing to be breathing in. In order to kill two birds with one stone, I put Jacob's Ladder in an airtight dome. The lack of ambient airflow would allow the arc to lift itself up with the heat it produced itself, and the Ozone would not be as big of a problem. After making a nice acrylic enclosure for the transformer and power supply and making my first circuit board, my very own Jacob’s Ladder had been completed, and it was beautiful and smelled horrible. 
-	
-<p>My favorite project by far was my life-sized K9 robot from Doctor Who. It all started when I went to the New York maker faire, there I met a group of people who had all built robots from famous media; R2D2, K9 C3P0, and a lot more. They inspired me to build robots on the level which they did, I’ve always loved robots and was happy I finally had a group I could ask questions and get help from. I convinced my dad to allow me to make one with the exception I make a cardboard model first. In order to make a scale model I needed some plans, and after searching the internet for a while I found some exact measurements. Once I had all the pieces cut out I started to apply way too much hot glue to stick them together. After essentially dousing the model in hot glue, it was finished. I stuck a full hot glue stick on the butt of the model to act as a mock-tail and my cardboard model was finished. I had proven to not only my dad but also to myself, that I wanted to build this model. We decided to build the K9 body out of MDF, which is a type of wood that is very easy to cut and not too heavy. After attaching the same plans I used on the cardboard model to the MDF, I used a circular saw, and sometimes a jigsaw, to carefully follow the lines. After all of the pieces had been cut out, we had the pain of trying to attach them. At first, we tried nailing the pieces together with nails, but we found that the pieces were too thin. So after some nonstop brainstorming, we had the idea to use some 2x4 to attach the pieces, and after nailing all the pieces the body was ready. After some final touch-ups with putty, and using plaster to make a control panel, we were ready to work on the electronics. We found some good motors which are a special type of motor called a hub motor, a hub motor is just a wheel with the motor inside it. We also found a good battery which we could use to power all the electronics, little did we know this battery would lead to some big problems. We bought some cheap hub motor controllers online which, as we would find out the hard way, were too cheap and sadly burnt out way too fast. After fixing the controllers we needed to turn the wheels on and off without manually plugging them in, we used some relays, which are just electronic switches. In order to control these relays however we needed a microcontroller (a type of small computer) and we decided to use a Raspberry Pi 3 which is a very reliable microcontroller and easy to use. After writing code for K9, he was up and running, or so we thought. Everything was working fine until we noticed sometimes when we would stop telling K9 to go forward he would keep moving. After almost five months of toiling over the problem, we narrowed the problem down to a relay that was somehow sticking, and after about five more months of fixing things that were not the problem, we discovered the problem was EMF (Electro-Magnetic Field) interference from other relays. After wrapping a box in foil tape to absorb the fields the problem was solved, and we finally had a fully working K9 with no problems.
-	
-	<p>In conclusion, my many projects have taught me effective ways to solve problems that I come across, I love building things and I have learned how to adapt to many different situations. 
-</p>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to My Portfolio</h1>
+            <p>Exploring the intersection of creativity, engineering, and innovation through hands-on projects and passionate building.</p>
+            <a href="#about" class="cta-button">Discover My Work</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">About This Portfolio</h2>
+            <div class="about-content">
+                <div class="about-highlights">
+                    <div class="highlight-item fade-in">
+                        <h3>Project Videos</h3>
+                        <p>Visual documentation of my creative process and finished projects</p>
+                    </div>
+                    <div class="highlight-item fade-in">
+                        <h3>Technical Innovation</h3>
+                        <p>Showcasing 4+ years of hands-on engineering and creative problem-solving</p>
+                    </div>
+                    <div class="highlight-item fade-in">
+                        <h3>Personal Journey</h3>
+                        <p>My story of discovery through making, breaking, and rebuilding</p>
+                    </div>
+                </div>
+                <div class="essay-content fade-in">
+                    <p>Mechatronics has always captivated me, offering the perfect blend of hands-on work, working with wood, metal, or designing and 3d printing mechanical parts, and designing and soldering a circuits to do a variety of tasks. From a young age I was fascinated by the inner workings of household devices, often disassembling them to understand their mechanisms and electronics, then improving their functionality, or even bring discarded and broken items back to life.</p>
+                    <p>The biggest project I have undertaken was my two year long development of a life sized fully working K9 from Doctor Who. In 2016 I started work on building a life-size, fully functional 1:1 scale model of K9, utilizing scavenged parts from a hoverboard for its wheels and a basic three axis armature for it's tail.</p>
+                    <p>Throughout my journey as a builder, tinkerer, and designer, three projects stand out: a functioning Predator costume I engineered for Halloween, a nuclear fusor which I exhibited at Open Sauce a maker fair in San Diego, and the 1:1 scale fully functional K9. Each of these projects taught me new skills and helped me expand my existing knowledge.</p>
                 </div>
             </div>
         </div>
     </section>
-	
-	<!-- Footer -->
-    <footer class="py-5 bg-dark">
-        <div class="container">
-        </div>
-    </footer>
-    <!-- Bootstrap core JavaScript -->
-     <!-- jQuery -->
-	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-	 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.min.js">\x3C/script>')</script>
 
-	<!-- FlexSlider -->
-	<script defer src="js/jquery.flexslider.js"></script>
-    <script src="Scripts/bootstrap.js"></script>
-    <script src="Scripts/scrolling-nav.js"></script>
-	<script>
-	// Can also be used with $(document).ready()
-     $(window).on('load', function() {
-       $('.flexslider').flexslider({
-         animation: "slide"
-       });
-     });
-	</script>
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Featured Projects</h2>
+            <div class="glass-card fade-in">
+                <h3>Life-Sized K9 Robot</h3>
+                <p>A fully functional 1:1 scale replica of K9 from Doctor Who, complete with remote controlled movement, extending nose mechanism, and ear movement. Built from MDF, brass, and 3d printed parts, with custom electronics including hub motors, Raspberry Pi control, and wireless Xbox controller integration.</p>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>High-Voltage Projects</h3>
+                <p>Work with high-voltage including a Jacob's Ladder with custom acrylic enclosure and circuit board, Tesla coil powered with salvaged components, and some other high-voltage experiments.</p>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>Predator Costume</h3>
+                <p>A fully functional costume featuring integrated electronics, custom designed and manufactured parts, and multiple material techniques learned specifically for this one-week build.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- K9 Videos Section -->
+    <section id="k9videos" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">K9 Robot Videos</h2>
+            <div class="video-gallery">
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_1.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Hub BLDC motors used to make K9 mobile</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_2.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">K9 controlled by Xbox 360 controller</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_3.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Horizontal extension mechanism for K9's nose</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_4.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Nose mechanism installed and functioning</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_5.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Mechanism for opposing ear movements</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_6.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Ears installed and operational</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_7.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">K9 with full electronics installation</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/K9_8.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">K9 fully assembled and ready</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Misc Videos Section -->
+    <section id="miscvideos" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">Miscellaneous Projects</h2>
+            <div class="video-gallery">
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/Flamethrower_V1.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Hydrogen generator powered flame device</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/CandyCaneCanon_1.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Bungee cord cannon shooting projectiles</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/TeslaCoil_1.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Tesla coil powered by fly zapper</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/TeslaCoil_2.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Tesla coil illuminated in darkness</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/ElectroMagnet.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Electromagnet from microwave transformer</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/JacobsLadder.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Custom-built Jacob's Ladder</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/Predator.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">Predator costume with custom electronics</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/FusorDemo.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">A quick demo of the nuclear fusor exhibited at Open Sauce</div>
+                </div>
+                <div class="video-card fade-in">
+                    <video controls>
+                        <source src="vids/CodeMikoInterview.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">An interview I did live about my nuclear fusor</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="scrollToTop()">
+        <span style="font-size: 24px;">↑</span>
+    </div>
+
+    <script>
+        // Conway's Game of Life
+        class GameOfLife {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.cellSize = 8;
+                this.cols = 0;
+                this.rows = 0;
+                this.grid = [];
+                this.nextGrid = [];
+                
+                this.resize();
+                this.init();
+                this.animate();
+                
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.cols = Math.floor(this.canvas.width / this.cellSize);
+                this.rows = Math.floor(this.canvas.height / this.cellSize);
+                this.init();
+            }
+            
+            init() {
+                this.grid = [];
+                this.nextGrid = [];
+                
+                // Initialize grids
+                for (let x = 0; x < this.cols; x++) {
+                    this.grid[x] = [];
+                    this.nextGrid[x] = [];
+                    for (let y = 0; y < this.rows; y++) {
+                        this.grid[x][y] = Math.random() > 0.85 ? 1 : 0;
+                        this.nextGrid[x][y] = 0;
+                    }
+                }
+            }
+            
+            countNeighbors(x, y) {
+                let count = 0;
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue;
+                        
+                        let nx = (x + i + this.cols) % this.cols;
+                        let ny = (y + j + this.rows) % this.rows;
+                        count += this.grid[nx][ny];
+                    }
+                }
+                return count;
+            }
+            
+            update() {
+                // Calculate next generation
+                for (let x = 0; x < this.cols; x++) {
+                    for (let y = 0; y < this.rows; y++) {
+                        let neighbors = this.countNeighbors(x, y);
+                        let current = this.grid[x][y];
+                        
+                        if (current === 1) {
+                            this.nextGrid[x][y] = (neighbors === 2 || neighbors === 3) ? 1 : 0;
+                        } else {
+                            this.nextGrid[x][y] = neighbors === 3 ? 1 : 0;
+                        }
+                    }
+                }
+                
+                // Swap grids
+                [this.grid, this.nextGrid] = [this.nextGrid, this.grid];
+            }
+            
+            draw() {
+                this.ctx.fillStyle = '#000000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.ctx.fillStyle = '#718096';
+                for (let x = 0; x < this.cols; x++) {
+                    for (let y = 0; y < this.rows; y++) {
+                        if (this.grid[x][y] === 1) {
+                            this.ctx.fillRect(
+                                x * this.cellSize,
+                                y * this.cellSize,
+                                this.cellSize - 1,
+                                this.cellSize - 1
+                            );
+                        }
+                    }
+                }
+            }
+            
+            animate() {
+                this.update();
+                this.draw();
+                setTimeout(() => this.animate(), 150);
+            }
+        }
+
+        // Initialize Game of Life
+        function initGameOfLife() {
+            const canvas = document.getElementById('gameOfLifeCanvas');
+            new GameOfLife(canvas);
+        }
+
+        // Smooth scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Initialize animations on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initGameOfLife();
+            
+            // Observe fade-in elements
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                observer.observe(el);
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(15, 15, 35, 0.98)';
+            } else {
+                navbar.style.background = 'rgba(15, 15, 35, 0.95)';
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-
