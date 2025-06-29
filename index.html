@@ -413,6 +413,115 @@
             font-weight: bold;
         }
         
+        /* Contact Form Styling */
+        .contact-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .contact-form:hover {
+            border-color: rgba(113, 128, 150, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(113, 128, 150, 0.2);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: rgba(226, 232, 240, 0.6);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-submit {
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2.5rem;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(113, 128, 150, 0.3);
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(113, 128, 150, 0.4);
+        }
+
+        .form-submit:active {
+            transform: translateY(0);
+        }
+
+        .resume-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .resume-link:hover {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(113, 128, 150, 0.2);
+        }
+
+        .contact-content {
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -614,11 +723,19 @@
     <section id="contact" class="section">
         <div class="container">
             <h2 class="section-title fade-in">Contact Me</h2>
-            <div class="contact-content">
-                <div class="essay-content fade-in">
-                    <a href="mailto:contact@aidan.calamera.com" style="color:rgb(255, 255, 255);">Email Me</a>
-                    <br>
-                    <a href="imgs/CV.pdf" style="color:rgb(255, 255, 255);">My Resume</a>
+            <div class="contact-content fade-in">
+                <div class="contact-form">
+                    <form method="POST" action="mailto:contact@aidan.calamera.com" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="message">Message me here or email me at contact@aidan.calamera.com</label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="form-submit">Send Message</button>
+                            <br>
+                            <a href="imgs/CV.pdf" class="resume-link" target="_blank">My Resume</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
