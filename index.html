@@ -727,7 +727,7 @@
             <h2 class="section-title fade-in">Contact Me</h2>
             <div class="contact-content fade-in">
                 <div class="contact-form">
-                    <form method="POST" action="mailto:contact@aidan.calamera.com" enctype="multipart/form-data">
+                    <form id="contactForm">
                         <div class="form-group">
                             <label for="message">Message me here or email me at contact@aidan.calamera.com</label>
                             <textarea id="message" name="message" class="form-textarea" placeholder="" required></textarea>
@@ -748,6 +748,19 @@
         <span style="font-size: 24px;">↑</span>
     </div>
 
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const message = document.getElementById('message').value;
+            
+            const subject = encodeURIComponent('Contact from Portfolio');
+            const body = encodeURIComponent(`Message:\n${message}`);
+            
+            window.open(`mailto:contact@aidan.calamera.com?subject=${subject}&body=${body}`);
+        });
+    </script>
+    
     <script>
         // Conway's Game of Life
         class GameOfLife {
