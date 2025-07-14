@@ -754,8 +754,8 @@
             
             const message = document.getElementById('message').value;
             
-            const subject = encodeURIComponent('Contact from Portfolio');
-            const body = encodeURIComponent(`Message:\n${message}`);
+            const subject = encodeURIComponent('Contact via Portfolio');
+            const body = encodeURIComponent(`${message}`);
             
             window.open(`mailto:contact@aidan.calamera.com?subject=${subject}&body=${body}`);
         });
